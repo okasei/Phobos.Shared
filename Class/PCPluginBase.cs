@@ -141,14 +141,14 @@ namespace Phobos.Shared.Class
         public virtual async Task<ConfigResult> ReadConfig(string key, string? targetPackageName = null)
         {
             if (_handlers?.ReadConfig != null)
-                return await _handlers.ReadConfig(GetCallerContext(), key, targetPackageName ?? Metadata.PackageName);
+                return await _handlers.ReadConfig(GetCallerContext(), key, targetPackageName);
             return new ConfigResult { Success = false, Key = key, Message = "ReadConfig handler not set" };
         }
 
         public virtual async Task<ConfigResult> WriteConfig(string key, string value, string? targetPackageName = null)
         {
             if (_handlers?.WriteConfig != null)
-                return await _handlers.WriteConfig(GetCallerContext(), key, value, targetPackageName ?? Metadata.PackageName);
+                return await _handlers.WriteConfig(GetCallerContext(), key, value, targetPackageName);
             return new ConfigResult { Success = false, Key = key, Message = "WriteConfig handler not set" };
         }
 

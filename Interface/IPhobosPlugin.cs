@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Phobos.Shared.Interface
 {
@@ -98,9 +95,30 @@ namespace Phobos.Shared.Interface
         public List<PluginFileInfo> FileList { get; set; } = new();
 
         /// <summary>
-        /// 插件图标路径（相对路径）
+        /// 插件图标路径（相对于插件目录的路径）
+        /// 例如: "Assets/icon.png" 或 "icon.ico"
         /// </summary>
-        public string? IconPath { get; set; }
+        public string? Icon { get; set; }
+
+        /// <summary>
+        /// 是否为系统插件
+        /// 系统插件不可被用户卸载，只能由系统管理
+        /// </summary>
+        public bool IsSystemPlugin { get; set; } = false;
+
+        /// <summary>
+        /// 设置页面的命令 URI
+        /// 例如: "log://setting" 或 "calculator://preferences"
+        /// 为空表示插件没有设置页面
+        /// </summary>
+        public string? SettingUri { get; set; }
+
+        /// <summary>
+        /// 特殊卸载提示信息
+        /// 用于系统插件或需要特殊说明的插件
+        /// 卸载时会显示此提示，一般插件不需要设置
+        /// </summary>
+        public PluginUninstallInfo? UninstallInfo { get; set; }
 
         /// <summary>
         /// 插件描述
@@ -116,6 +134,16 @@ namespace Phobos.Shared.Interface
         /// 最小 Phobos 版本要求
         /// </summary>
         public string? MinPhobosVersion { get; set; }
+
+        /// <summary>
+        /// [已弃用] 请使用 Icon 属性
+        /// </summary>
+        [Obsolete("Use Icon property instead")]
+        public string? IconPath
+        {
+            get => Icon;
+            set => Icon = value;
+        }
 
         /// <summary>
         /// 获取本地化名称
@@ -148,6 +176,83 @@ namespace Phobos.Shared.Interface
         {
             return FileList.Find(f => f.IsMainAssembly || f.FileType == PluginFileType.MainAssembly)?.RelativePath;
         }
+
+        /// <summary>
+        /// 获取图标完整路径
+        /// </summary>
+        /// <param name="pluginDirectory">插件目录</param>
+        /// <returns>图标完整路径，如果没有设置则返回 null</returns>
+        public string? GetIconFullPath(string pluginDirectory)
+        {
+            if (string.IsNullOrEmpty(Icon))
+                return null;
+            return System.IO.Path.Combine(pluginDirectory, Icon);
+        }
+    }
+
+    /// <summary>
+    /// 插件卸载信息
+    /// </summary>
+    public class PluginUninstallInfo
+    {
+        /// <summary>
+        /// 是否允许卸载
+        /// </summary>
+        public bool AllowUninstall { get; set; } = true;
+
+        /// <summary>
+        /// 卸载提示标题
+        /// </summary>
+        public string Title { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 卸载提示消息
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 本地化的卸载提示标题
+        /// </summary>
+        public Dictionary<string, string> LocalizedTitles { get; set; } = new();
+
+        /// <summary>
+        /// 本地化的卸载提示消息
+        /// </summary>
+        public Dictionary<string, string> LocalizedMessages { get; set; } = new();
+
+        /// <summary>
+        /// 卸载前需要执行的命令（可选）
+        /// </summary>
+        public string? PreUninstallCommand { get; set; }
+
+        /// <summary>
+        /// 卸载后需要执行的命令（可选）
+        /// </summary>
+        public string? PostUninstallCommand { get; set; }
+
+        /// <summary>
+        /// 获取本地化标题
+        /// </summary>
+        public string GetLocalizedTitle(string languageCode)
+        {
+            if (LocalizedTitles.TryGetValue(languageCode, out var title))
+                return title;
+            if (LocalizedTitles.TryGetValue("en-US", out var defaultTitle))
+                return defaultTitle;
+            return Title;
+        }
+
+        /// <summary>
+        /// 获取本地化消息
+        /// </summary>
+        public string GetLocalizedMessage(string languageCode)
+        {
+            if (LocalizedMessages.TryGetValue(languageCode, out var message))
+                return message;
+            if (LocalizedMessages.TryGetValue("en-US", out var defaultMessage))
+                return defaultMessage;
+            return Message;
+        }
     }
 
     /// <summary>
@@ -158,7 +263,7 @@ namespace Phobos.Shared.Interface
         /// <summary>
         /// 调用者名称
         /// </summary>
-        public Dictionary<string,string> Name { get; set; } = new();
+        public Dictionary<string, string> Name { get; set; } = new();
         /// <summary>
         /// 调用者包名
         /// </summary>
