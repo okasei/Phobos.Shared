@@ -136,6 +136,13 @@ namespace Phobos.Shared.Interface
         public string? MinPhobosVersion { get; set; }
 
         /// <summary>
+        /// 启动入口命令
+        /// 例如: "calculator://open" 或 "notepad://new"
+        /// 为空表示插件不在桌面显示（后台服务类插件）
+        /// </summary>
+        public string? Entry { get; set; }
+
+        /// <summary>
         /// [已弃用] 请使用 Icon 属性
         /// </summary>
         [Obsolete("Use Icon property instead")]
@@ -188,6 +195,11 @@ namespace Phobos.Shared.Interface
                 return null;
             return System.IO.Path.Combine(pluginDirectory, Icon);
         }
+
+        /// <summary>
+        /// 是否有启动入口（是否应该在桌面显示）
+        /// </summary>
+        public bool HasEntry => !string.IsNullOrEmpty(Entry);
     }
 
     /// <summary>
