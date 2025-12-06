@@ -27,6 +27,11 @@ namespace Phobos.Shared.Class
         LeftAlignedText = 3,
 
         /// <summary>
+        /// 模式4: 居中图片，下方注释（带注释的图片模式）
+        /// </summary>
+        ImageWithCaption = 4,
+
+        /// <summary>
         /// 自定义内容
         /// </summary>
         Custom = 0
@@ -63,7 +68,8 @@ namespace Phobos.Shared.Class
         Button1 = 2,  // 最右侧 Primary
         Button2 = 3,
         Button3 = 4,
-        Button4 = 5
+        Button4 = 5,
+        Button5 = 6   // 新增支持第5个按钮
     }
 
     /// <summary>
@@ -191,6 +197,16 @@ namespace Phobos.Shared.Class
         public double ContentImageMaxHeight { get; set; } = 150;
 
         /// <summary>
+        /// 中心图片注释文本（用于 ImageWithCaption 模式）
+        /// </summary>
+        public string? ContentImageCaption { get; set; }
+
+        /// <summary>
+        /// 本地化中心图片注释文本
+        /// </summary>
+        public Dictionary<string, string>? LocalizedContentImageCaptions { get; set; }
+
+        /// <summary>
         /// 内容文本
         /// </summary>
         public string? ContentText { get; set; }
@@ -216,7 +232,7 @@ namespace Phobos.Shared.Class
         public List<DialogButton> Buttons { get; set; } = new();
 
         /// <summary>
-        /// 显示按钮数量（2-4）
+        /// 显示按钮数量（1-5）
         /// </summary>
         public int VisibleButtonCount { get; set; } = 2;
 
@@ -329,6 +345,18 @@ namespace Phobos.Shared.Class
             if (LocalizedCancelButtonTexts != null && LocalizedCancelButtonTexts.TryGetValue("en-US", out var fallback))
                 return fallback;
             return CancelButtonText;
+        }
+
+        /// <summary>
+        /// 获取本地化中心图片注释文本
+        /// </summary>
+        public string? GetLocalizedContentImageCaption(string languageCode)
+        {
+            if (LocalizedContentImageCaptions != null && LocalizedContentImageCaptions.TryGetValue(languageCode, out var text))
+                return text;
+            if (LocalizedContentImageCaptions != null && LocalizedContentImageCaptions.TryGetValue("en-US", out var fallback))
+                return fallback;
+            return ContentImageCaption;
         }
     }
 

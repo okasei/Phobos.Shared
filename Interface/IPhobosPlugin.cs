@@ -3,6 +3,27 @@
 namespace Phobos.Shared.Interface
 {
     /// <summary>
+    /// 窗口大小模式
+    /// </summary>
+    public enum WindowSizeMode
+    {
+        /// <summary>
+        /// 默认模式：使用 PreferredWidth/PreferredHeight，如未设置则使用默认值
+        /// </summary>
+        Default,
+
+        /// <summary>
+        /// 自适应内容模式：根据 ContentArea 的 DesiredSize 自动调整窗口大小
+        /// </summary>
+        SizeToContent,
+
+        /// <summary>
+        /// 固定大小模式：使用 PreferredWidth/PreferredHeight，用户不能调整大小
+        /// </summary>
+        Fixed
+    }
+
+    /// <summary>
     /// 插件依赖项
     /// </summary>
     public class PluginDependency
@@ -143,6 +164,67 @@ namespace Phobos.Shared.Interface
         public string? Entry { get; set; }
 
         /// <summary>
+        /// 启动标志
+        /// 当为 true 时，插件可以被用户显式启动（在桌面显示）
+        /// 当为 false 或 null 时，插件不能被显式启动（PCOPhobosDesktop 会隐藏这些插件）
+        /// </summary>
+        public bool? LaunchFlag { get; set; }
+
+        /// <summary>
+        /// 多窗口标志
+        /// 当为 true 时，允许同一个插件打开多个窗口实例
+        /// 当为 false 或 null 时，同一插件只能有一个窗口（默认行为）
+        /// </summary>
+        public bool? MultiWindowFlag { get; set; }
+
+        /// <summary>
+        /// 首选窗口宽度（像素）
+        /// 如果为 null 或 0，则使用默认值 800
+        /// </summary>
+        public double? PreferredWidth { get; set; }
+
+        /// <summary>
+        /// 首选窗口高度（像素）
+        /// 如果为 null 或 0，则使用默认值 600
+        /// </summary>
+        public double? PreferredHeight { get; set; }
+
+        /// <summary>
+        /// 最小窗口宽度（像素）
+        /// 如果为 null 或 0，则使用默认值 400
+        /// </summary>
+        public double? MinWindowWidth { get; set; }
+
+        /// <summary>
+        /// 最小窗口高度（像素）
+        /// 如果为 null 或 0，则使用默认值 300
+        /// </summary>
+        public double? MinWindowHeight { get; set; }
+
+        /// <summary>
+        /// 窗口大小模式
+        /// </summary>
+        public WindowSizeMode SizeMode { get; set; } = WindowSizeMode.Default;
+
+        /// <summary>
+        /// 是否显示最小化按钮
+        /// 默认为 true
+        /// </summary>
+        public bool ShowMinimizeButton { get; set; } = true;
+
+        /// <summary>
+        /// 是否显示最大化/还原按钮
+        /// 默认为 true
+        /// </summary>
+        public bool ShowMaximizeButton { get; set; } = true;
+
+        /// <summary>
+        /// 是否显示关闭按钮
+        /// 默认为 true
+        /// </summary>
+        public bool ShowCloseButton { get; set; } = true;
+
+        /// <summary>
         /// [已弃用] 请使用 Icon 属性
         /// </summary>
         [Obsolete("Use Icon property instead")]
@@ -200,6 +282,18 @@ namespace Phobos.Shared.Interface
         /// 是否有启动入口（是否应该在桌面显示）
         /// </summary>
         public bool HasEntry => !string.IsNullOrEmpty(Entry);
+
+        /// <summary>
+        /// 是否可以被显式启动（是否应该在桌面显示）
+        /// LaunchFlag 为 true 时返回 true，为 false 或 null 时返回 false
+        /// </summary>
+        public bool CanLaunch => LaunchFlag == true;
+
+        /// <summary>
+        /// 是否允许多窗口
+        /// MultiWindowFlag 为 true 时返回 true，为 false 或 null 时返回 false
+        /// </summary>
+        public bool AllowMultiWindow => MultiWindowFlag == true;
     }
 
     /// <summary>
