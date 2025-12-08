@@ -26,7 +26,8 @@ namespace Phobos.Shared.Class
         public Func<PluginCallerContext, string, string, object[], Task<RequestResult>>? Subscribe { get; set; }
         public Func<PluginCallerContext, string, string, object[], Task<RequestResult>>? Unsubscribe { get; set; }
         public Func<PluginCallerContext, ResourceDictionary?>? GetMergedDictionaries { get; set; }
-
+        // 事件触发处理器（新增）
+        public Func<PluginCallerContext, string, string, object[], Task<RequestResult>>? TriggerEvent { get; set; }
         // Logger 处理器
         public Func<PluginCallerContext, LogLevel, string, Exception?, object[]?, Task<RequestResult>>? Log { get; set; }
     }
@@ -267,6 +268,27 @@ namespace Phobos.Shared.Class
         public event EventHandler<PluginEventArgs>? EventReceived;
 
         #endregion
+
+        #region 事件触发（新增）
+
+        /// <summary>
+        /// 触发事件到主程序，通知其他订阅者
+        /// </summary>
+        /// <param name="eventId">事件大类 ID</param>
+        /// <param name="eventName">事件小类名称</param>
+        /// <param name="args">事件参数</param>
+        /// <returns>触发结果</returns>
+        public virtual async Task<RequestResult> TriggerEvent(string eventId, string eventName, params object[] args)
+        {
+            if (_handlers?.TriggerEvent != null)
+            {
+                return await _handlers.TriggerEvent(GetCallerContext(), eventId, eventName, args);
+            }
+            return new RequestResult { Success = false, Message = "TriggerEvent handler not set" };
+        }
+
+        #endregion
+
 
         #region 主题获取
 

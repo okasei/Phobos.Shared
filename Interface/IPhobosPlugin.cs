@@ -24,6 +24,16 @@ namespace Phobos.Shared.Interface
     }
 
     /// <summary>
+    /// 插件事件参数
+    /// </summary>
+    public class PluginEventArgs : EventArgs
+    {
+        public string EventId { get; set; } = string.Empty;
+        public string EventName { get; set; } = string.Empty;
+        public object[] Args { get; set; } = Array.Empty<object>();
+    }
+
+    /// <summary>
     /// 插件依赖项
     /// </summary>
     public class PluginDependency
@@ -591,6 +601,14 @@ namespace Phobos.Shared.Interface
         /// <param name="args">事件参数</param>
         Task OnEventReceived(string eventId, string eventName, params object[] args);
 
+        /// <summary>
+        /// 触发事件到主程序（由插件调用，通知其他订阅者）
+        /// </summary>
+        /// <param name="eventId">事件大类 ID</param>
+        /// <param name="eventName">事件小类名称</param>
+        /// <param name="args">事件参数</param>
+        Task<RequestResult> TriggerEvent(string eventId, string eventName, params object[] args);
+
         #region Logger 方法
 
         /// <summary>
@@ -661,6 +679,7 @@ namespace Phobos.Shared.Interface
         /// 窗口相关事件
         /// </summary>
         public const string Window = "Window";
+        public const string App = "App";
     }
 
     /// <summary>
